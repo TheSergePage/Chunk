@@ -178,6 +178,13 @@ namespace Chunk {
                                _PieceSize, _OffsetSize );
     }
 
+    static inline size_t fGet( const wstring _Value, const wchar_t _Target, const enDirection _Type,
+                               const size_t _PieceSize, const size_t _OffsetSize ) {
+      return CRaw<wchar_t>::fGet( _Value.c_str(), _Value.length(),
+                               _Target, _Type,
+                               _PieceSize, _OffsetSize );
+    }
+
     template<typename T>
     static size_t fGet( const vector<T> _Collection, const T _Target, const enDirection _Type,
                         const size_t _PieceSize, const size_t _OffsetSize ) {
