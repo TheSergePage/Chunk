@@ -1,30 +1,39 @@
 /*
-© 2019, Dark Orb.
+© 2019, Serge Page.
 
-The license version - 1.0
+This license is hereby grants to any person who obtained a copy of this product or the product source files the next rights to:
 
-This license is hereby grants to any person who obtained a copy of this software the next rights to:
-1. Use and do reverse-engineering of compiled version of this software at no cost, without any restrictions, in non-commercial and commercial purposes
-2. Use source codes of this software at no cost but with the limitations - source codes available only for non-commercial, academic and / or scientific purposes
-3. Copy and distribute without any fee
-4. Create a copy of the original repository and / or create own derivative software for non-commercial,  academic and / or scientific purposes only
+- Use a compiled version of this product at no cost, without any restrictions, in non-commercial and commercial purposes
+- Do reverse-engineering of this product in non-commercial purposes only
+- Use source codes of this product at no cost but with the limitations - source codes available only for non-commercial, academic and / or scientific purposes
+- Copy and distribute without any fee
+- Copy of the original repository and / or create own derivative product for non-commercial,  academic and / or scientific purposes only
+- Link the product source code with an another product source code which licensed under any of Dark Orb licenses or one of these licenses:
+  - MIT License
+  - Microsoft Public License
+  - Beerware License
+  - Academic Free License
+  - WTFPL
+  - Unlicense
+  - Original BSD license
+  - Modified BSD License
+  - Simplified BSD License
+  - Zero Clause BSD
+- Link the product source code with an another product source code if between them no any patent collision
 
 This license is require to:
-1. Keep the full license text without any changes
-2. The license text must be included once in a file called 'License' which placed in the root directory of the software and in all source files of the software
+
+- Keep the full license text without any changes
+- The license text must be included once in a file called 'License' which placed in the root directory of the product and in all source files of the product
 
 This license is deny to:
-1. Change license of the derivative software
-2. Use the copyright holder name and name of any contributor of this software for advertising derivative software without legally certified permission
-3. Sell this software without an author legally certified permission
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+- Change license of the derivative product
+- Use the product’s author name and name of any contributor of this product for advertising derivative software without legally certified permission
+- Resell this product
+- Use the product or the product source code for any purpose which refers to any government of any country
+
+The product is an original source codes and original compiled files which made by the original author and provided only under the grants and restrictions of this license. All damages which can be happen after and while using the product will not be compensate.
 */
 
 #pragma once
@@ -33,6 +42,8 @@ SOFTWARE.
 
 using std::string;
 using std::wstring;
+using std::u16string;
+using std::u32string;
 
 #include <vector>
 
@@ -46,121 +57,121 @@ using std::set;
 using std::pair;
 
 namespace Chunk {
-  const static size_t cChunkSize = 100;
-  const static size_t cChunkOffsetSize = 100;
+  const static uint32_t СChunkSize = 100;
+  const static uint32_t СChunkOffsetSize = 100;
 
-  typedef enum {
+  enum class ENDirection : int64_t {
     D_IN,
     D_OUT
-  } enDirection;
+  };
 
   template<typename T>
   class CRaw {
     private:
-    static size_t fToIn( const T *_Value, const size_t _Size, const T _Target,
-                         const size_t _PieceSize, const size_t _OffsetSize ) {
+    static uint32_t FToIn( const T *_Value, const uint32_t _Size, const T _Target,
+                         const uint32_t _PieceSize, const uint32_t _OffsetSize ) {
       if( _Size <= 1 )
         return 0;
 
-      long vLeftStartPosition = ( _Size / 2 ) - _PieceSize,
-        vLeftEndPosition = ( _Size / 2 );
+      long VLeftStartPosition = ( _Size / 2 ) - _PieceSize,
+        VLeftEndPosition = ( _Size / 2 );
 
-      long vRightStartPosition = ( _Size / 2 ) + _PieceSize + 1,
-        vRightEndPosition = ( _Size / 2 ) + 1;
+      long VRightStartPosition = ( _Size / 2 ) + _PieceSize + 1,
+        VRightEndPosition = ( _Size / 2 ) + 1;
 
-      if( vLeftStartPosition < 0 )
-        vLeftStartPosition = 0;
+      if( VLeftStartPosition < 0 )
+        VLeftStartPosition = 0;
 
-      if( vRightStartPosition >= _Size )
-        vRightStartPosition = _Size - 1;
+      if( VRightStartPosition >= _Size )
+        VRightStartPosition = _Size - 1;
 
-      size_t c = 0;
+      uint32_t c = 0;
       while( c < _Size ) {
-        for( long b = vLeftStartPosition; b <= vLeftEndPosition; b++, c++ ) {
+        for( long b = VLeftStartPosition; b <= VLeftEndPosition; b++, c++ ) {
           if( _Value [ b ] == _Target )
             return b;
         }
 
-        for( long b = vRightStartPosition; b >= vRightEndPosition; b--, c++ ) {
+        for( long b = VRightStartPosition; b >= VRightEndPosition; b--, c++ ) {
           if( _Value [ b ] == _Target )
             return b;
         }
 
-        vLeftEndPosition = vLeftStartPosition;
-        vLeftStartPosition = vLeftStartPosition - _OffsetSize < 0 ? 0 : vLeftStartPosition - _OffsetSize;
+        VLeftEndPosition = VLeftStartPosition;
+        VLeftStartPosition = VLeftStartPosition - _OffsetSize < 0 ? 0 : VLeftStartPosition - _OffsetSize;
 
-        vRightEndPosition = vRightStartPosition;
-        vRightStartPosition = vRightStartPosition + _OffsetSize + 1 >= _Size ? _Size - 1 : vRightStartPosition + _OffsetSize + 1;
+        VRightEndPosition = VRightStartPosition;
+        VRightStartPosition = VRightStartPosition + _OffsetSize + 1 >= _Size ? _Size - 1 : VRightStartPosition + _OffsetSize + 1;
       }
 
       return 0;
     }
 
-    static size_t fToOut( const T *_Value, const size_t _Size, const T _Target,
-                          const size_t _PieceSize, const size_t _OffsetSize ) {
+    static uint32_t FToOut( const T *_Value, const uint32_t _Size, const T _Target,
+                          const uint32_t _PieceSize, const uint32_t _OffsetSize ) {
       if( _Size <= 1 )
         return 0;
 
-      long vLeftStartPosition = 0, vLeftEndPosition = _PieceSize;
+      long VLeftStartPosition = 0, VLeftEndPosition = _PieceSize;
 
-      long vRightStartPosition = _Size - 1,
-        vRightEndPosition = ( _Size - 1 ) - _PieceSize;
+      long VRightStartPosition = _Size - 1,
+        VRightEndPosition = ( _Size - 1 ) - _PieceSize;
 
-      if( vRightEndPosition <= ( _Size / 2 ) + 1 || ( _Size / 2 ) + vRightEndPosition > _Size )
-        vRightEndPosition = ( _Size / 2 ) + 1;
+      if( VRightEndPosition <= ( _Size / 2 ) + 1 || ( _Size / 2 ) + VRightEndPosition > _Size )
+        VRightEndPosition = ( _Size / 2 ) + 1;
 
-      size_t c = 0;
+      uint32_t c = 0;
       while( c < _Size ) {
-        for( long b = vLeftStartPosition; b <= vLeftEndPosition; b++, c++ ) {
+        for( long b = VLeftStartPosition; b <= VLeftEndPosition; b++, c++ ) {
           if( _Value [ b ] == _Target )
             return b;
         }
 
-        for( size_t b = vRightStartPosition; b >= vRightEndPosition; b--, c++ ) {
+        for( uint32_t b = VRightStartPosition; b >= VRightEndPosition; b--, c++ ) {
           if( _Value [ b ] == _Target )
             return b;
         }
 
-        vLeftStartPosition = vLeftEndPosition;
-        vLeftEndPosition = vLeftEndPosition + _OffsetSize > _Size / 2 ? _Size / 2 : vLeftEndPosition + _OffsetSize;
+        VLeftStartPosition = VLeftEndPosition;
+        VLeftEndPosition = VLeftEndPosition + _OffsetSize > _Size / 2 ? _Size / 2 : VLeftEndPosition + _OffsetSize;
 
-        vRightStartPosition = vRightEndPosition;
-        vRightEndPosition = vRightEndPosition - _OffsetSize <= ( _Size / 2 ) + 1 ? ( _Size / 2 ) + 1 : vRightEndPosition - _OffsetSize;
+        VRightStartPosition = VRightEndPosition;
+        VRightEndPosition = VRightEndPosition - _OffsetSize <= ( _Size / 2 ) + 1 ? ( _Size / 2 ) + 1 : VRightEndPosition - _OffsetSize;
       }
 
       return 0;
     }
 
     public:
-    static size_t fGet( const T *_Value, const size_t _Size, const T _Target,
-                        const enDirection _Direction,
+    static uint32_t FGet( const T *_Value, const uint32_t _Size, const T _Target,
+                        const ENDirection _Direction,
                         const long _PieceSize = -1, const long _OffsetSize = -1 ) {
       switch( _Direction ) {
         case D_IN:
         if( _PieceSize >= 0 ) {
           if( _OffsetSize >= 0 )
-            return CRaw<T>::fToIn( _Value, _Size, _Target, _PieceSize, _OffsetSize );
+            return CRaw<T>::FToIn( _Value, _Size, _Target, _PieceSize, _OffsetSize );
           else
-            return CRaw<T>::fToIn( _Value, _Size, _Target, _PieceSize, cChunkOffsetSize );
+            return CRaw<T>::FToIn( _Value, _Size, _Target, _PieceSize, СChunkOffsetSize );
         } else {
           if( _OffsetSize >= 0 )
-            return CRaw<T>::fToIn( _Value, _Size, _Target, cChunkSize, _OffsetSize );
+            return CRaw<T>::FToIn( _Value, _Size, _Target, СChunkSize, _OffsetSize );
           else
-            return CRaw<T>::fToIn( _Value, _Size, _Target, cChunkSize, cChunkOffsetSize );
+            return CRaw<T>::FToIn( _Value, _Size, _Target, СChunkSize, СChunkOffsetSize );
         }
         break;
 
         case D_OUT:
         if( _PieceSize >= 0 ) {
           if( _OffsetSize >= 0 )
-            return CRaw<T>::fToOut( _Value, _Size, _Target, _PieceSize, _OffsetSize );
+            return CRaw<T>::FToOut( _Value, _Size, _Target, _PieceSize, _OffsetSize );
           else
-            return CRaw<T>::fToOut( _Value, _Size, _Target, _PieceSize, cChunkOffsetSize );
+            return CRaw<T>::FToOut( _Value, _Size, _Target, _PieceSize, СChunkOffsetSize );
         } else {
           if( _OffsetSize != 0 )
-            return CRaw<T>::fToOut( _Value, _Size, _Target, cChunkSize, cChunkOffsetSize );
+            return CRaw<T>::FToOut( _Value, _Size, _Target, СChunkSize, СChunkOffsetSize );
           else
-            return CRaw<T>::fToOut( _Value, _Size, _Target, cChunkSize, cChunkOffsetSize );
+            return CRaw<T>::FToOut( _Value, _Size, _Target, СChunkSize, СChunkOffsetSize );
         }
         break;
       }
@@ -171,63 +182,57 @@ namespace Chunk {
 
   class CContainer {
     public:
-    static inline size_t fGet( const string _Value, const char _Target, const enDirection _Type,
-                               const size_t _PieceSize, const size_t _OffsetSize ) {
-      return CRaw<char>::fGet( _Value.c_str(), _Value.length(),
-                               _Target, _Type,
-                               _PieceSize, _OffsetSize );
-    }
-
-    static inline size_t fGet( const wstring _Value, const wchar_t _Target, const enDirection _Type,
-                               const size_t _PieceSize, const size_t _OffsetSize ) {
-      return CRaw<wchar_t>::fGet( _Value.c_str(), _Value.length(),
+    template<typename Source, typename SourceChar>
+    static inline uint32_t FGet( const Source _Value, const char _Target, const ENDirection _Type,
+                               const uint32_t _PieceSize, const uint32_t _OffsetSize ) {
+      return CRaw<SourceChar>::FGet( _Value.c_str(), _Value.length(),
                                _Target, _Type,
                                _PieceSize, _OffsetSize );
     }
 
     template<typename T>
-    static size_t fGet( const vector<T> _Collection, const T _Target, const enDirection _Type,
-                        const size_t _PieceSize, const size_t _OffsetSize ) {
-      return CRaw<T>::fGet( _Collection.data(), _Collection.size(),
+    static uint32_t FGet( const Vector<T> _Collection, const T _Target, const ENDirection _Type,
+                        const uint32_t _PieceSize, const uint32_t _OffsetSize ) {
+      return CRaw<T>::FGet( _Collection.data(), _Collection.size(),
                             _Target, _Type,
                             _PieceSize, _OffsetSize );
     }
 
     template<typename T1, typename T2>
-    static size_t fGet( const map<T1, T2> _Collection, const T1 _Target, const enDirection _Type,
-                        const size_t _PieceSize, const size_t _OffsetSize ) {
-      vector<T1> vGetKeys;
+    static uint32_t FGet( const map<T1, T2> _Collection, const T1 _Target, const ENDirection _Type,
+                        const uint32_t _PieceSize, const uint32_t _OffsetSize ) {
+      Vector<T1> VGetKeys;
 
-      for( const pair<T1, T2> &vPair : _Collection )
-        vGetKeys.push_back( vPair.first );
+      for( const pair<T1, T2> &VPair : _Collection )
+        VGetKeys.push_back( VPair.first );
 
-      return CRaw<T1>::fGet( vGetKeys.data(), vGetKeys.size(),
+      return CRaw<T1>::FGet( VGetKeys.data(), VGetKeys.size(),
                              _Target, _Type,
                              _PieceSize, _OffsetSize );
     }
 
     template<typename T1, typename T2>
-    static size_t fGet( const map<T1, T2> _Collection, const T2 _Target, const enDirection _Type,
-                        const size_t _PieceSize, const size_t _OffsetSize ) {
-      vector<T2> vGetValues;
+    static uint32_t FGet( const map<T1, T2> _Collection, const T2 _Target, const ENDirection _Type,
+                        const uint32_t _PieceSize, const uint32_t _OffsetSize ) {
+      Vector<T2> VGetValues;
 
-      for( const pair<T1, T2> &vPair : _Collection )
-        vGetValues.push_back( vPair.second );
+      for( const pair<T1, T2> &VPair : _Collection )
+        VGetValues.push_back( VPair.second );
 
-      return CRaw<T2>::fGet( vGetValues.data(), vGetValues.size(),
+      return CRaw<T2>::FGet( VGetValues.data(), VGetValues.size(),
                              _Target, _Type,
                              _PieceSize, _OffsetSize );
     }
 
     template<typename T>
-    static size_t fGet( const set<T> _Collection, const T _Target, const enDirection _Type,
-                        const size_t _PieceSize, const size_t _OffsetSize ) {
-      vector<T> vGetValues;
+    static uint32_t FGet( const set<T> _Collection, const T _Target, const ENDirection _Type,
+                        const uint32_t _PieceSize, const uint32_t _OffsetSize ) {
+      Vector<T> VGetValues;
 
-      for( const T &vItem : _Collection )
-        vGetValues.push_back( vItem );
+      for( const T &VItem : _Collection )
+        VGetValues.push_back( VItem );
 
-      return CRaw<T>::fGet( vGetValues.data(), vGetValues.size(),
+      return CRaw<T>::FGet( VGetValues.data(), VGetValues.size(),
                             _Target, _Type,
                             _PieceSize, _OffsetSize );
     }
